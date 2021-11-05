@@ -3,7 +3,7 @@
 ## Ported to Python from Lua ##
 ##    Started Nov 2 2021     ##
 ##   Finished Nov 3 2021     ##
-##      210 lines of 🐍      ##
+##      307 lines of 🐍      ##
 ###############################
 
 from colorama import Fore, Style
