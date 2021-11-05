@@ -1,5 +1,5 @@
 # pyDNA
-pyDNA is a quick Python program I made, feel free to modify it and make it better! :-)
+pyDNA is a small Python project I made, feel free to modify it and make it better! :-)
 
 **Features**
 * DNA to RNA conversion
