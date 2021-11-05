@@ -7,6 +7,7 @@
 ###############################
 
 from colorama import Fore, Style
+from random import randrange
 
 codonDictionary = {
   'U': {
@@ -155,6 +156,21 @@ def convDNAtoRNA(sequence):
       codonRNA_S = codonRNA_S + ' '
   return codonRNA_S.strip()
 
+def matchDNAasDNA(sequence):
+  unformattedDNA = sequence.replace(" ", "")
+  charDNA_A = list(unformattedDNA.lower())
+  DNA_S = ""
+  for x in charDNA_A:
+    if x == 'a':
+      DNA_S = DNA_S + 'T'
+    if x == 't':
+      DNA_S = DNA_S + 'A'
+    if x == 'c':
+      DNA_S = DNA_S + 'G'
+    if x == 'g':
+      DNA_S = DNA_S + 'C'
+  return DNA_S.strip()
+
 def RNAtoPROTEIN(sequence):
   u_Sequence = sequence.upper()
   RNA_A = u_Sequence.split(' ')
@@ -186,25 +202,106 @@ def RNAtoPROTEIN(sequence):
     # Remove unnecessary spaces
   return(protein_S.strip())
 
+def structureFromDNA(sequence, mode):
+  _sequence = sequence.upper()
+  sequence_A = list(_sequence.replace(" ", ""))
+  color_A = []
+  structure = f""
+
+  for base in sequence_A:
+    if base == 'A':
+      color_A.append(Fore.RED)
+    if base == 'T':
+      color_A.append(Fore.BLUE)
+    if base == 'C':
+      color_A.append(Fore.LIGHTYELLOW_EX)
+    if base == 'G':
+      color_A.append(Fore.GREEN)
+    
+  if mode == True: # if it should be a double helix
+    _color_A = []
+    _sequence_A = list(matchDNAasDNA(sequence.upper()))
+    iteration = 0
+    struct_A = []
+
+    for base in _sequence_A:
+      if base == 'A':
+        _color_A.append(Fore.RED)
+      if base == 'T':
+        _color_A.append(Fore.BLUE)
+      if base == 'C':
+        _color_A.append(Fore.LIGHTYELLOW_EX)
+      if base == 'G':
+        _color_A.append(Fore.GREEN)
+    
+    for color in color_A:
+      struct_A.append(f"|{color}█{Style.RESET_ALL}-")
+    for _color in _color_A:
+      struct_A[iteration] = struct_A[iteration] + f"{_color}█{Style.RESET_ALL}|\n"
+      iteration+=1
+    
+    for basePair in struct_A:
+      structure = structure + basePair
+
+    return structure
+  
+  if mode == False: # if it should be a single strand
+    for color in color_A:
+      structure = structure + f"|{color}█{Style.RESET_ALL}\n"
+    
+    return structure
+
+def generateDNA(length):
+  DNA_S = ""
+  for x in range(length):
+    base = randrange(4) # out of 4 bases
+
+    if base == 0:
+      DNA_S = DNA_S + 'A'
+    if base == 1:
+      DNA_S = DNA_S + 'T'
+    if base == 2:
+      DNA_S = DNA_S + 'C'
+    if base == 3:
+      DNA_S = DNA_S + 'G'
+    
+  return DNA_S
+
 # Define a dictionary for cache purposes
 
 Seq_D = {}
 
-mode = input(f"{Fore.YELLOW}Pick your mode:\n {Style.RESET_ALL} {Fore.RED}1: {Style.RESET_ALL} DNA -> RNA\n {Style.RESET_ALL} {Fore.RED}2: {Style.RESET_ALL} DNA-> Protein\n {Style.RESET_ALL} {Fore.RED}3: {Style.RESET_ALL} RNA-> Protein\n")
-
-sequence = input(f"{Fore.YELLOW}Your mode is: " + mode + f". Please enter a sequence. (Make sure the length of it is divisible by 3.)\n{Style.RESET_ALL}")
-Seq_D["s"] = str(sequence)
+mode = input(f"{Fore.YELLOW}Pick your mode:\n {Style.RESET_ALL} {Fore.RED}1: {Style.RESET_ALL} DNA -> RNA\n {Style.RESET_ALL} {Fore.RED}2: {Style.RESET_ALL} DNA -> Protein\n {Style.RESET_ALL} {Fore.RED}3: {Style.RESET_ALL} RNA -> Protein\n{Fore.RED}  4: {Style.RESET_ALL} DNA Visualizer\n {Fore.RED} 5: {Style.RESET_ALL} DNA Generator\n")
 Seq_D["m"] = int(mode)
 
 if Seq_D["m"] == 1:
-
+  sequence = input(f"{Fore.YELLOW}Your mode is: " + mode + f". Please enter a sequence. (Make sure the length of it is divisible by 3.)\n{Style.RESET_ALL}")
+  Seq_D["s"] = str(sequence)
   print(f"{Fore.YELLOW} RNA -> DNA: {Style.RESET_ALL}" + convDNAtoRNA(Seq_D["s"]))
 if Seq_D["m"] == 2:
-
+  sequence = input(f"{Fore.YELLOW}Your mode is: " + mode + f". Please enter a sequence. (Make sure the length of it is divisible by 3.)\n{Style.RESET_ALL}")
+  Seq_D["s"] = str(sequence)
   print(f"{Fore.YELLOW} DNA -> Protein: {Style.RESET_ALL}" + RNAtoPROTEIN(convDNAtoRNA(Seq_D["s"])))
 
 if Seq_D["m"] == 3:
+  sequence = input(f"{Fore.YELLOW}Your mode is: " + mode + f". Please enter a sequence. (Make sure the length of it is divisible by 3.)\n{Style.RESET_ALL}")
+  Seq_D["s"] = str(sequence)
   print(f"{Fore.YELLOW} RNA -> Protein: {Style.RESET_ALL}" + RNAtoPROTEIN(Seq_D["s"]))
+
+if Seq_D["m"] == 4:
+  _mode = input(f"{Fore.YELLOW}Please choose a mode! {Style.RESET_ALL}\n  {Fore.RED}1: {Style.RESET_ALL} Single stranded\n {Style.RESET_ALL} {Fore.RED}2: {Style.RESET_ALL} Double stranded\n")
+  Seq_D["_m"] = int(_mode)
+  if Seq_D["_m"] == 1:
+    sequence = input(f"{Fore.YELLOW}Your mode is: 1. Please enter a valid DNA sequence.\n{Style.RESET_ALL} {Fore.MAGENTA}HINT: {Fore.RED}A{Style.RESET_ALL} is {Fore.RED}RED{Style.RESET_ALL}, {Fore.BLUE}T{Style.RESET_ALL} is {Fore.BLUE}BLUE{Style.RESET_ALL}, {Fore.LIGHTYELLOW_EX}C{Style.RESET_ALL} is {Fore.LIGHTYELLOW_EX}YELLOW{Style.RESET_ALL}, {Fore.GREEN}G{Style.RESET_ALL} is {Fore.GREEN}GREEN{Style.RESET_ALL}\n")
+    print(structureFromDNA(str(sequence), False))
+
+  if Seq_D["_m"] == 2:
+    sequence = input(f"{Fore.YELLOW}Your mode is: 2. Please enter a valid DNA sequence.\n{Style.RESET_ALL} {Fore.MAGENTA}HINT: {Fore.RED}A{Style.RESET_ALL} is {Fore.RED}RED{Style.RESET_ALL}, {Fore.BLUE}T{Style.RESET_ALL} is {Fore.BLUE}BLUE{Style.RESET_ALL}, {Fore.LIGHTYELLOW_EX}C{Style.RESET_ALL} is {Fore.LIGHTYELLOW_EX}YELLOW{Style.RESET_ALL}, {Fore.GREEN}G{Style.RESET_ALL} is {Fore.GREEN}GREEN{Style.RESET_ALL}\n")
+    print(structureFromDNA(str(sequence), True))
+
+if Seq_D["m"] == 5:
+  length = input(f"{Fore.YELLOW}Please choose a length!\n{Style.RESET_ALL}")
+  print(generateDNA(int(length)))
 
 ##################################################################################################                          .*END OF FILE*.                     ############
 ######################################################################################
